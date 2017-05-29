@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik
+    ports:
+      - 80:80
+      - 8080:8080
+      - 443:443
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    command:
+        - --web
+        - --logLevel=DEBUG
+        - --docker
+        - --docker.watch
+        - --docker.exposedbydefault=false
+        - --docker.domain=zayats.org
+        - --acme
+        - --acme.storage=/acme.json
+        - --acme.email=dev@globalgames.net
+        - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
+        - --acme.ondemand=true
+        - --acme.entryPoint=https
+        - --entryPoints=Name:http Address::80 Redirect.EntryPoint:https
+        - --entryPoints=Name:https Address::443 TLS
+        - --defaultentrypoints=http,https
+    labels:
+      traefik.domain: "zayats.org"
